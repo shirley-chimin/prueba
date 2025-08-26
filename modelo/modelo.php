@@ -42,24 +42,33 @@ class Medicamento {
 public function actualizar($data) {
     $precio = floatval($data['precio']);
     $stock = intval($data['stock']);
+    $fecha_vencimiento = intval($data['fecha_vencimiento']); // convertir a entero
     $id = intval($data['id']);
 
     $stmt = $this->conn->prepare(
-        "UPDATE medicamentos SET nombre=?, descripcion=?, precio=?, stock=?, fecha_vencimiento=? WHERE id=?"
+        "UPDATE medicamentos 
+         SET nombre=?, descripcion=?, precio=?, stock=?, fecha_vencimiento=? 
+         WHERE id=?"
     );
+
+    if (!$stmt) {
+        die("Error en prepare: " . $this->conn->error);
+    }
+
     $stmt->bind_param(
-        "ssdssi",
+        "ssdi i i",  // s=string, d=decimal, i=integer
         $data['nombre'],
         $data['descripcion'],
         $precio,
         $stock,
-        $data['fecha_vencimiento'],
+        $fecha_vencimiento,
         $id
     );
 
     if (!$stmt->execute()) {
         die("Error al ejecutar UPDATE: " . $stmt->error);
     }
+
     return true;
 }
 
