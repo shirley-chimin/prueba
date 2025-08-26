@@ -56,7 +56,7 @@ public function actualizar($data) {
     }
 
     $stmt->bind_param(
-        "ssdi i i",  // s=string, d=decimal, i=integer
+        "ssdi i i",  // s=string, d=decimal, i=integer final
         $data['nombre'],
         $data['descripcion'],
         $precio,
