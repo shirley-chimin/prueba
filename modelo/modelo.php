@@ -18,16 +18,50 @@ class Medicamento {
     }
 
     public function crear($data) {
-        $stmt = $this->conn->prepare("INSERT INTO medicamentos (nombre, descripcion, precio, stock, fecha_vencimiento) VALUES (?,?,?,?,?)");
-        $stmt->bind_param("ssdis", $data['nombre'], $data['descripcion'], $data['precio'], $data['stock'], $data['fecha_vencimiento']);
-        return $stmt->execute();
-    }
+    $precio = floatval($data['precio']); // convertir a número decimal
+    $stock = intval($data['stock']);     // convertir a entero
 
-    public function actualizar($data) {
-        $stmt = $this->conn->prepare("UPDATE medicamentos SET nombre=?, descripcion=?, precio=?, stock=?, fecha_vencimiento=? WHERE id=?");
-        $stmt->bind_param("ssdisi", $data['nombre'], $data['descripcion'], $data['precio'], $data['stock'], $data['fecha_vencimiento'], $data['id']);
-        return $stmt->execute();
+    $stmt = $this->conn->prepare(
+        "INSERT INTO medicamentos (nombre, descripcion, precio, stock, fecha_vencimiento) VALUES (?,?,?,?,?)"
+    );
+    $stmt->bind_param(
+        "ssdsi",
+        $data['nombre'],
+        $data['descripcion'],
+        $precio,
+        $stock,
+        $data['fecha_vencimiento']
+    );
+
+    if (!$stmt->execute()) {
+        die("Error al ejecutar INSERT: " . $stmt->error);
     }
+    return true;
+}
+
+public function actualizar($data) {
+    $precio = floatval($data['precio']);
+    $stock = intval($data['stock']);
+    $id = intval($data['id']);
+
+    $stmt = $this->conn->prepare(
+        "UPDATE medicamentos SET nombre=?, descripcion=?, precio=?, stock=?, fecha_vencimiento=? WHERE id=?"
+    );
+    $stmt->bind_param(
+        "ssdssi",
+        $data['nombre'],
+        $data['descripcion'],
+        $precio,
+        $stock,
+        $data['fecha_vencimiento'],
+        $id
+    );
+
+    if (!$stmt->execute()) {
+        die("Error al ejecutar UPDATE: " . $stmt->error);
+    }
+    return true;
+}
 
     public function eliminar($id) {
         $stmt = $this->conn->prepare("DELETE FROM medicamentos WHERE id=?");
